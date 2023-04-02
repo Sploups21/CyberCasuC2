@@ -1,0 +1,30 @@
+########################################
+##### Version 1.0.0 - 31 mars 2023 #####
+########################################
+
+CyberCasu Software -- C2 CyberCasu
+
+Ressources :
+
+. Client-C2_1.0.zip 
+. Generator1.0.py
+
+Prototype :
+
+. Lancement du serveur C2 sur l'IP 170.187.191.105
+. Liaison entre le Serveur C2 et la plateforme effectuée
+. Generator xll implémenté
+. Lancement du GitHub accessible par lien
+
+Nous espérons que cette première version de la plateforme en Flask répondra à vos besoins 
+et nous sommes impatients de recevoir vos commentaires et suggestions pour les 
+prochaines mises à jour.*
+
+*Cybercasu est un framework C2 open source conçue pour un usage privé uniquement. 
+Nous ne sommes pas responsables de l'utilisation de ce logiciel par des tiers et nous ne 
+pouvons pas contrôler les actions des utilisateurs. En téléchargeant, installant et 
+utilisant Cybercasu, vous assumez la responsabilité de son utilisation et vous acceptez 
+de ne pas l'utiliser à des fins illégales ou malveillantes. Nous n'assumons aucune 
+responsabilité pour les dommages directs ou indirects causés par l'utilisation de Cybercasu. 
+Il est de votre responsabilité de vous conformer à toutes les lois et réglementations 
+applicables en matière de sécurité informatique.*
