@@ -1,5 +1,22 @@
 # CyberCasuC2
 
+Un serveur C2 fonctionnant par API en Python pour machines Windows réalisé dans le cadre d'un projet scolaire.
+
+Options disponibles :
+
+- énumération d'antivirus
+- screenshotting
+- keylogger
+- téléchargement de fichiers via URL
+- cmd shell
+
+La génération d'un client s'effectue via le script client_generator.py : ce dernier utilise de l'obfuscation basique pour rendre le code plus dur à lire.
+
+Le client, une fois compilé en .exe, n'est pas détecté par les grandes marques d'antivirus :
+
+![image](https://user-images.githubusercontent.com/66923124/231251585-b8284721-13f6-4014-abde-83e835c9689c.jpg)
+
+
 ## Support
 
 > Obtenir le code
@@ -80,3 +97,4 @@ Visiter `http://localhost:85` dans votre navigateur. L'application devrait être
 ```
 
 
+Note : Pas de carabistouilles avec cet outil ! Il a été réalisé uniquement dans un but éducatif donc merci de ne pas l'utiliser à des fins malveillantes.
